@@ -11,8 +11,12 @@ require "lib/init"
 -- paddestoel die te lang blijft, wordt giftig
 -- giftige paddestoel spawnt meer paddestoelen (gpt zei "en monsters" :D) en als je daar overheen muist gaat je muis trager. of verlies je health?
 -- effect/event triggers en handlers
+-- health bars!
 
 local SCORE_LENGTH = 4
+local ATTACK_AFTER = 200
+local MAX_HEALTH = 5
+local AGE_AFTER = 500
 
 local bounds = {
 	x_upper = 780,
@@ -65,6 +69,16 @@ local collectibles = {
 	},
 }
 
+local healers = {
+	[1] = {
+		name = "shroom",
+		sprite = Sprites.shroom,
+		spriteBad = Sprites.shroomBad,
+		hit = Sounds.heal,
+		hitBad = Sounds.shroomBad,
+	},
+}
+
 local monstersIndex = {
 	[1] = monsters.space,
 	[2] = monsters.ghost,
@@ -79,6 +93,7 @@ local mobState = {
 	mob = "",
 	sprite = {},
 	class = "",
+	attackBuildup = 0,
 	hitbox = {
 		x = 0,
 		y = 0,
@@ -88,17 +103,47 @@ local mobState = {
 }
 
 local playerState = {
-	health = 5,
+	health = MAX_HEALTH,
 	score = 5,
 }
 
 local winningState = {
 	show = false,
-	alpha = 255,
+	alpha = 1,
 	winnings = 0,
 	x = 0,
 	y = 0,
 }
+
+local healerState = {
+	show = false,
+	heal = 1,
+	age = 0,
+	x = 0,
+	y = 0,
+}
+
+local function setHealer()
+	local rnd = math.ceil(math.random() * 10)
+	healerState.x = math.random(bounds.x_lower, bounds.x_upper)
+	healerState.y = math.random(bounds.y_lower, bounds.y_upper)
+	healerState.sprite = healers[1].sprite
+	healerState.hit = healers[1].hit
+	if rnd > 5 then
+		healerState.show = true
+		return
+	end
+	healerState.show = false
+end
+
+local function ageHealer(dt)
+	healerState.age = healerState.age + 1
+	if healerState.age > AGE_AFTER then
+		healerState.heal = -1
+		healerState.hit = healers[1].hitBad
+		healerState.sprite = healers[1].spriteBad
+	end
+end
 
 local function setNextMob()
 	local rnd = math.ceil(math.random() * 10)
@@ -114,6 +159,7 @@ local function setNextMob()
 		mobState.hit = monster.hit
 		mobState.miss = monster.miss
 		mobState.mob = mobs.MONSTER
+		mobState.attackBuildup = 0
 		return
 	end
 	if rnd < 9 then
@@ -170,9 +216,10 @@ local function moveMob()
 end
 
 setNextMob()
+setHealer()
 
 local function updateWinnings(dt)
-	winningState.alpha = winningState.alpha - (dt * (255))
+	winningState.alpha = winningState.alpha - dt
 	if winningState.winnings > 0 then
 		winningState.y = winningState.y - 1
 	else
@@ -185,14 +232,13 @@ end
 
 function love.update(dt)
 	moveMob()
+	ageHealer(dt)
 
 	if winningState.show then
 		updateWinnings(dt)
 	end
 
-	if MonsterDelay == 200 then
-		Sounds.hit:play()
-		mobState.size = 80
+	if mobState.attackBuildup >= ATTACK_AFTER then
 		playerState.health = playerState.health - 1
 	end
 end
@@ -200,11 +246,12 @@ end
 function DrawWinnings()
 	if winningState.show then
 		if winningState.winnings < 0 then
-			love.graphics.setColor(1, 0, 0, winningState.alpha / 255)
+			love.graphics.setColor(1, 0, 0, winningState.alpha)
 		else
-			love.graphics.setColor(1, 0.8, 0.2, winningState.alpha / 255)
+			love.graphics.setColor(1, 0.8, 0.2, winningState.alpha)
 		end
 		love.graphics.print(winningState.winnings, winningState.x - 8, winningState.y - 15)
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 end
 
@@ -213,21 +260,32 @@ function love.draw()
 		DrawHealth(playerState.health)
 		DrawScore(playerState.score)
 		DrawMob()
+		DrawHealer()
 		DrawWinnings()
 	end)
 end
 
 function DrawMob()
 	if mobState.mob == mobs.MONSTER then
-		MonsterDelay = MonsterDelay + 1
+		mobState.attackBuildup = mobState.attackBuildup + 1
+	end
+	if mobState.attackBuildup > ATTACK_AFTER then
+		Sounds.hit:play()
+		mobState.size = 80
+		mobState.attackBuildup = 0
+		love.graphics.setColor(1, 0, 0, 1)
+		love.graphics.rectangle("fill", 0, 0, 800, 20)
+		love.graphics.rectangle("fill", 0, 0, 20, 600)
+		love.graphics.rectangle("fill", 780, 0, 800, 600)
+		love.graphics.rectangle("fill", 0, 580, 800, 600)
 	end
 	-- draw hitbox
 	-- love.graphics.setColor(1, 0, 1, 255)
 	-- love.graphics.rectangle("fill", mobState.hitbox.x, mobState.hitbox.y, mobState.size, mobState.size)
-	-- love.graphics.setColor(1, 1, 1, 255)
 	love.graphics.draw(mobState.sprite, mobState.x, mobState.y, math.rad(mobState.rot), mobState.size / 8,
 		mobState.size / 8,
 		4, 4)
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 function DrawHealth(health)
@@ -237,10 +295,16 @@ function DrawHealth(health)
 end
 
 function DrawScore(score)
-	love.graphics.setColor(1, 0.8, 0.2, 255)
+	love.graphics.setColor(1, 0.8, 0.2, 1)
 	love.graphics.print("$", 650, 50)
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.print(string.rep("0", SCORE_LENGTH - #tostring(playerState.score)) .. playerState.score, 680, 50)
+end
+
+function DrawHealer()
+	if healerState.show then
+		love.graphics.draw(healerState.sprite, healerState.x, healerState.y, 0, 3, 3)
+	end
 end
 
 local function updatePlayerState(winnings)
@@ -262,7 +326,7 @@ function love.mousepressed(x, y, button)
 				winnings = mobState.class == "bag" and 5 or 1
 				winningState = {
 					show = true,
-					alpha = 255,
+					alpha = 1,
 					winnings = winnings,
 					x = mobState.x,
 					y = mobState.y,
@@ -270,13 +334,25 @@ function love.mousepressed(x, y, button)
 			end
 			mobState.hit:stop()
 			mobState.hit:play()
+		elseif x > healerState.x
+				and x < healerState.x + 24
+				and y > healerState.y
+				and y < healerState.y + 24 then
+			-- shroom hit
+			playerState.health = playerState.health + healerState.heal
+			if playerState.health > MAX_HEALTH then
+				playerState.health = MAX_HEALTH
+			end
+			healerState.hit:play()
+			healerState.heal = 1
+			healerState.age = 0
 		else
 			-- miss
 			if mobState.mob == mobs.MONEY then
 				winnings = -5
 				winningState = {
 					show = true,
-					alpha = 255,
+					alpha = 1,
 					winnings = winnings,
 					x = mobState.x - 8, -- 8 is half the width of "-5"
 					y = mobState.y + mobState.size,
@@ -285,9 +361,10 @@ function love.mousepressed(x, y, button)
 			mobState.miss:stop()
 			mobState.miss:play()
 		end
+
+		-- only if mob hit
 		updatePlayerState(winnings)
-		MonsterDelay = 0
-		-- pas later?
+		setHealer()
 		setNextMob()
 	end
 end

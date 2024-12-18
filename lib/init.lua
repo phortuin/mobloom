@@ -17,6 +17,8 @@ local function loadAssets()
 	}
 	Sprites.sword = love.graphics.newImage("assets/sword.png")
 	Sprites.heart = love.graphics.newImage("assets/heart.png")
+	Sprites.shroom = love.graphics.newImage("assets/shroom.png")
+	Sprites.shroomBad = love.graphics.newImage("assets/shroom-bad.png")
 	local cursor = love.mouse.newCursor("assets/cursor.png")
 
 	love.mouse.setCursor(cursor)
@@ -27,6 +29,8 @@ local function loadAssets()
 	Sounds.hit = love.audio.newSource("assets/hit.wav", "static")
 	Sounds.air = love.audio.newSource("assets/air.wav", "static")
 	Sounds.swordGet = love.audio.newSource("assets/sword-get.wav", "static")
+	Sounds.heal = love.audio.newSource("assets/heal.wav", "static")
+	Sounds.shroomBad = love.audio.newSource("assets/shroom-bad.wav", "static")
 end
 
 Effect = moonshine(moonshine.effects.glow)
