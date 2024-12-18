@@ -36,3 +36,64 @@ end
 Effect = moonshine(moonshine.effects.glow)
 love.graphics.setNewFont("assets/JetBrainsMono-Bold.ttf", 30)
 loadAssets()
+
+SCORE_LENGTH = 4
+ATTACK_AFTER = 200
+MAX_HP = 5
+AGE_AFTER = 500
+
+ATTACK_AFTER_SECONDS = 5
+POWERUP_SPAWN_INTERVAL = 10
+POWERUP_AGED_AFTER = 5
+
+Wrap = function(value, lower, upper)
+	if value > upper then return lower end
+	if value < lower then return upper end
+	return value
+end
+
+Clamp = function(value, lower, upper)
+	if value > upper then return upper end
+	if value < lower then return lower end
+	return value
+end
+
+Bounds = {
+	x_upper = 780,
+	x_lower = 20,
+	y_upper = 580,
+	y_lower = 20,
+	size_lower = 20,
+	size_upper = 40,
+}
+
+GameState = {
+	powerupTimer = 0,
+	monsters = {},
+	powerups = {},
+	player = {
+		hp = MAX_HP,
+		score = 5,
+	}
+}
+
+Monsters = {
+	{
+		name = "space",
+		sprite = Sprites.monsters[1],
+		hit = Sounds.hit,
+		miss = Sounds.air
+	},
+	{
+		name = "ghost",
+		sprite = Sprites.monsters[2],
+		hit = Sounds.hit,
+		miss = Sounds.air
+	},
+	{
+		name = "cringe",
+		sprite = Sprites.monsters[3],
+		hit = Sounds.hit,
+		miss = Sounds.air
+	},
+}
