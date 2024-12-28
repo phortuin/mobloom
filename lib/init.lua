@@ -19,6 +19,8 @@ local function loadAssets()
 	Sprites.heart = love.graphics.newImage("assets/heart.png")
 	Sprites.shroom = love.graphics.newImage("assets/shroom.png")
 	Sprites.shroomBad = love.graphics.newImage("assets/shroom-bad.png")
+	Sprites.boss = love.graphics.newImage("assets/boss-tree.png")
+	Sprites.splat = love.graphics.newImage("assets/splat.png")
 	local cursor = love.mouse.newCursor("assets/cursor.png")
 
 	love.mouse.setCursor(cursor)
@@ -27,6 +29,8 @@ local function loadAssets()
 	Sounds.coins = love.audio.newSource("assets/coin-many.wav", "static")
 	Sounds.lost = love.audio.newSource("assets/coin-lost.wav", "static")
 	Sounds.hit = love.audio.newSource("assets/hit.wav", "static")
+	Sounds.hitMob = love.audio.newSource("assets/hit-mob.wav", "static")
+	Sounds.mobDie = love.audio.newSource("assets/mob-die.wav", "static")
 	Sounds.air = love.audio.newSource("assets/air.wav", "static")
 	Sounds.swordGet = love.audio.newSource("assets/sword-get.wav", "static")
 	Sounds.heal = love.audio.newSource("assets/heal.wav", "static")
@@ -44,7 +48,9 @@ AGE_AFTER = 500
 
 ATTACK_AFTER_SECONDS = 5
 POWERUP_SPAWN_INTERVAL = 10
+BOSS_SPAWN_INTERVAL = 10
 POWERUP_AGED_AFTER = 5
+TAKING_DAMAGE_LASTS = 0.07
 
 Wrap = function(value, lower, upper)
 	if value > upper then return lower end
@@ -69,8 +75,11 @@ Bounds = {
 
 GameState = {
 	powerupTimer = 0,
+	bossTimer = 0,
+	bosses = {},
 	monsters = {},
 	powerups = {},
+	decals = {},
 	player = {
 		hp = MAX_HP,
 		score = 5,
@@ -81,19 +90,19 @@ Monsters = {
 	{
 		name = "space",
 		sprite = Sprites.monsters[1],
-		hit = Sounds.hit,
+		hit = Sounds.hitMob,
 		miss = Sounds.air
 	},
 	{
 		name = "ghost",
 		sprite = Sprites.monsters[2],
-		hit = Sounds.hit,
+		hit = Sounds.hitMob,
 		miss = Sounds.air
 	},
 	{
 		name = "cringe",
 		sprite = Sprites.monsters[3],
-		hit = Sounds.hit,
+		hit = Sounds.hitMob,
 		miss = Sounds.air
 	},
 }

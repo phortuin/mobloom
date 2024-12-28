@@ -29,13 +29,28 @@ function CreateMob()
 		y = spawnPoint.y,
 		rotation = spawnPoint.rotation,
 		size = spawnPoint.size,
+		smallestSize = Bounds.size_lower,
+		largestSize = Bounds.size_upper,
+		takingDamage = false,
+		takingDamageTimer = 0,
+		attackingTimer = 0,
 
 		move = function(self)
 			local dx, dy, ds, dr = math.random(-2, 2), math.random(-2, 2), math.random(-1, 1), math.random(-2, 2)
 			self.x = Wrap(self.x + dx, Bounds.x_lower, Bounds.x_upper)
 			self.y = Wrap(self.y + dy, Bounds.y_lower, Bounds.y_upper)
-			self.size = Clamp(self.size + ds, Bounds.size_lower, Bounds.size_upper)
+			self.size = Clamp(self.size + ds, self.smallestSize, self.largestSize)
 			self.rotation = self.rotation + dr
+		end,
+
+		update = function(self, dt)
+			if self.takingDamage then
+				self.takingDamageTimer = self.takingDamageTimer + dt
+			end
+			if self.takingDamageTimer > TAKING_DAMAGE_LASTS then
+				self.takingDamage = false
+				self.takingDamageTimer = 0
+			end
 		end,
 
 		checkHit = function(self, x, y)
@@ -44,13 +59,26 @@ function CreateMob()
 					and x < self.x + halfSize
 					and y > self.y - halfSize
 					and y < self.y + halfSize
-			-- hit
 		end,
 
 		draw = function(self)
-			love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / 8,
-				self.size / 8,
-				4, 4)
+			local w = self.sprite:getWidth()
+			local h = self.sprite:getHeight()
+			-- draw hitbox
+			-- love.graphics.setColor(1, 0, 1, 1)
+			-- love.graphics.rectangle("fill", self.x - self.size / 2, self.y - self.size / 2, self.size, self.size)
+			-- love.graphics.setColor(1, 1, 1, 1)
+			if self.takingDamageTimer > 0 then
+				love.graphics.setColor(1, 0, 0, 1)
+				love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), (self.size - 10) / w,
+					(self.size - 10) / h,
+					w / 2, h / 2)
+				love.graphics.setColor(1, 1, 1, 1)
+			else
+				love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / w,
+					self.size / h,
+					w / 2, h / 2)
+			end
 		end
 	}
 end
@@ -65,8 +93,14 @@ local function createMonster()
 	mob.attackTimer = 0
 	mob.takeDamage = function(self, damage)
 		self.hp = self.hp - damage
-		self.hit:stop()
-		self.hit:play()
+		self.takingDamage = true
+		if self.hp <= 0 then
+			Sounds.mobDie:stop()
+			Sounds.mobDie:play()
+		else
+			self.hit:stop()
+			self.hit:play()
+		end
 	end
 	mob.buildAttack = function(self, dt)
 		self.attackTimer = self.attackTimer + dt
@@ -74,8 +108,8 @@ local function createMonster()
 	mob.attackIfReady = function(self)
 		if self.attackTimer >= ATTACK_AFTER_SECONDS then
 			self.attackTimer = 0
-			self.hit:stop()
-			self.hit:play()
+			Sounds.hit:stop()
+			Sounds.hit:play()
 			GameState.player.hp = GameState.player.hp - 1
 			self:attack()
 			self.size = 20
@@ -91,6 +125,17 @@ local function createMonster()
 		love.graphics.rectangle("fill", 0, 580, 800, 600)
 		self:draw()
 	end
+	return mob
+end
+
+local function createBoss()
+	local mob = createMonster()
+	mob.sprite = Sprites.boss
+	mob.hp = 5
+	mob.size = 60
+	mob.smallestSize = 60
+	mob.largestSize = 100
+
 	return mob
 end
 
@@ -118,25 +163,53 @@ local createPowerup = function()
 	return mob
 end
 
+local function createDecal(mob)
+	local rotations = { 90, 180, 270, 360 }
+	return {
+		x = mob.x,
+		y = mob.y,
+		sprite = Sprites.splat,
+		size = mob.size,
+		rotation = mob.rotation * rotations[math.random(#rotations)],
+		draw = function(self)
+			local w = self.sprite:getWidth()
+			local h = self.sprite:getHeight()
+			love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / w,
+				self.size / h,
+				w / 2, h / 2)
+		end
+	}
+end
+
 function love.update(dt)
 	-- count towards next powerup spawn
 	GameState.powerupTimer = GameState.powerupTimer + dt
-	if
-			GameState.powerupTimer > POWERUP_SPAWN_INTERVAL
+	if GameState.powerupTimer > POWERUP_SPAWN_INTERVAL
 			and #GameState.powerups < 1 then
 		table.insert(GameState.powerups, createPowerup())
+	end
+
+	-- count towards boss arrival. bosses are monsters and
+	-- the bossTimer resets after spawning, not after killing
+	GameState.bossTimer = GameState.bossTimer + dt
+	if GameState.bossTimer > BOSS_SPAWN_INTERVAL then
+		GameState.bossTimer = 0
+		table.insert(GameState.monsters, createBoss())
 	end
 
 	-- remove dead monsters
 	for m = #GameState.monsters, 1, -1 do
 		if GameState.monsters[m].hp <= 0 then
+			local decal = createDecal(GameState.monsters[m])
+			table.insert(GameState.decals, decal)
 			table.remove(GameState.monsters, m)
 		end
 	end
 
-	-- move monsters
+	-- monsters upkeep
 	for _, monster in ipairs(GameState.monsters) do
 		monster:move()
+		monster:update(dt)
 		monster:buildAttack(dt)
 	end
 
@@ -153,16 +226,17 @@ end
 
 function love.draw()
 	Effect(function()
-		for _, monster in ipairs(GameState.monsters) do
-			monster:draw()
+		DrawHealth(GameState.player.hp)
+		DrawScore(GameState.player.score)
+
+		for _, decal in ipairs(GameState.decals) do
+			decal:draw()
 		end
 		for _, powerup in ipairs(GameState.powerups) do
 			powerup:draw()
 		end
-		DrawHealth(GameState.player.hp)
-		DrawScore(GameState.player.score)
-
 		for _, monster in ipairs(GameState.monsters) do
+			monster:draw()
 			monster:attackIfReady()
 		end
 	end)
@@ -182,13 +256,6 @@ function DrawScore(score)
 		50)
 end
 
-local function updatePlayerState(winnings)
-	GameState.player.score = GameState.player.score + winnings
-	if GameState.player.score <= 0 then
-		GameState.player.score = 0
-	end
-end
-
 function love.mousepressed(x, y, button)
 	if button == 1 then
 		local hit = false
@@ -206,6 +273,8 @@ function love.mousepressed(x, y, button)
 		end
 		if not hit then
 			-- missed everything? add monster
+			Sounds.air:stop()
+			Sounds.air:play()
 			table.insert(GameState.monsters, createMonster())
 		end
 	end
