@@ -1,6 +1,5 @@
 -- dependencies
-local love = require "love"
-local moonshine = require "vendor/moonshine"
+local moonshine = require "vendor.moonshine"
 
 Sprites = {}
 Sounds = {}

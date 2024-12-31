@@ -1,8 +1,8 @@
--- dependencies
-local love = require "love"
-
 -- init; loads assets and sets globals
-require "lib/init"
+require "lib.init"
+local Mob = require "src.entities.mob"
+local Decal = require "src.entities.decal"
+local Powerup = require "src.entities.powerup"
 
 -- als je te laat een monster pakt, pakt hij geld van je af, of health
 -- een monster moet je 2x klikken
@@ -13,78 +13,9 @@ require "lib/init"
 -- effect/event triggers en handlers
 -- health bars!
 
-local function getSpawnPoint()
-	return {
-		x = math.random(Bounds.x_lower, Bounds.x_upper),
-		y = math.random(Bounds.y_lower, Bounds.y_upper),
-		rotation = 0,
-		size = 20,
-	}
-end
-
-function CreateMob()
-	local spawnPoint = getSpawnPoint()
-	return {
-		x = spawnPoint.x,
-		y = spawnPoint.y,
-		rotation = spawnPoint.rotation,
-		size = spawnPoint.size,
-		smallestSize = Bounds.size_lower,
-		largestSize = Bounds.size_upper,
-		takingDamage = false,
-		takingDamageTimer = 0,
-		attackingTimer = 0,
-
-		move = function(self)
-			local dx, dy, ds, dr = math.random(-2, 2), math.random(-2, 2), math.random(-1, 1), math.random(-2, 2)
-			self.x = Wrap(self.x + dx, Bounds.x_lower, Bounds.x_upper)
-			self.y = Wrap(self.y + dy, Bounds.y_lower, Bounds.y_upper)
-			self.size = Clamp(self.size + ds, self.smallestSize, self.largestSize)
-			self.rotation = self.rotation + dr
-		end,
-
-		update = function(self, dt)
-			if self.takingDamage then
-				self.takingDamageTimer = self.takingDamageTimer + dt
-			end
-			if self.takingDamageTimer > TAKING_DAMAGE_LASTS then
-				self.takingDamage = false
-				self.takingDamageTimer = 0
-			end
-		end,
-
-		checkHit = function(self, x, y)
-			local halfSize = self.size / 2
-			return x > self.x - halfSize
-					and x < self.x + halfSize
-					and y > self.y - halfSize
-					and y < self.y + halfSize
-		end,
-
-		draw = function(self)
-			local w = self.sprite:getWidth()
-			local h = self.sprite:getHeight()
-			-- draw hitbox
-			-- love.graphics.setColor(1, 0, 1, 1)
-			-- love.graphics.rectangle("fill", self.x - self.size / 2, self.y - self.size / 2, self.size, self.size)
-			-- love.graphics.setColor(1, 1, 1, 1)
-			if self.takingDamageTimer > 0 then
-				love.graphics.setColor(1, 0, 0, 1)
-				love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), (self.size - 10) / w,
-					(self.size - 10) / h,
-					w / 2, h / 2)
-				love.graphics.setColor(1, 1, 1, 1)
-			else
-				love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / w,
-					self.size / h,
-					w / 2, h / 2)
-			end
-		end
-	}
-end
 
 local function createMonster()
-	local mob = CreateMob()
+	local mob = Mob:new()
 	local monster = Monsters[math.random(#Monsters)]
 	mob.sprite = monster.sprite
 	mob.hp = 1
@@ -139,54 +70,13 @@ local function createBoss()
 	return mob
 end
 
-local createPowerup = function()
-	local mob = CreateMob()
-	mob.sprite = Sprites.shroom
-	mob.hit = Sounds.heal
-	mob.age = 0
-	mob.heal = 1
-	mob.consume = function(self)
-		self.hit:stop()
-		self.hit:play()
-		GameState.player.hp = GameState.player.hp + mob.heal
-		GameState.powerupTimer = 0
-		GameState.powerups = {}
-	end
-	mob.deprecate = function(self, dt)
-		self.age = self.age + dt
-		if self.age > POWERUP_AGED_AFTER then
-			mob.hit = Sounds.shroomBad
-			mob.sprite = Sprites.shroomBad
-			mob.heal = -1
-		end
-	end
-	return mob
-end
-
-local function createDecal(mob)
-	local rotations = { 90, 180, 270, 360 }
-	return {
-		x = mob.x,
-		y = mob.y,
-		sprite = Sprites.splat,
-		size = mob.size,
-		rotation = mob.rotation * rotations[math.random(#rotations)],
-		draw = function(self)
-			local w = self.sprite:getWidth()
-			local h = self.sprite:getHeight()
-			love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / w,
-				self.size / h,
-				w / 2, h / 2)
-		end
-	}
-end
 
 function love.update(dt)
 	-- count towards next powerup spawn
 	GameState.powerupTimer = GameState.powerupTimer + dt
 	if GameState.powerupTimer > POWERUP_SPAWN_INTERVAL
 			and #GameState.powerups < 1 then
-		table.insert(GameState.powerups, createPowerup())
+		table.insert(GameState.powerups, Powerup:new())
 	end
 
 	-- count towards boss arrival. bosses are monsters and
@@ -200,7 +90,7 @@ function love.update(dt)
 	-- remove dead monsters
 	for m = #GameState.monsters, 1, -1 do
 		if GameState.monsters[m].hp <= 0 then
-			local decal = createDecal(GameState.monsters[m])
+			local decal = Decal:new(GameState.monsters[m])
 			table.insert(GameState.decals, decal)
 			table.remove(GameState.monsters, m)
 		end
