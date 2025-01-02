@@ -1,3 +1,5 @@
+local drawable = require 'src.util.drawable'
+
 local Decal = {}
 Decal.__index = Decal
 
@@ -14,11 +16,7 @@ function Decal:new(mob)
 end
 
 function Decal:draw()
-	local w = self.sprite:getWidth()
-	local h = self.sprite:getHeight()
-	love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / w,
-		self.size / h,
-		w / 2, h / 2)
+	drawable.draw(self)
 end
 
 return Decal

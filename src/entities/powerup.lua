@@ -1,14 +1,22 @@
-local Mob = require 'src.entities.mob'
+local spawn = require "src.util.spawn"
+local drawable = require "src.util.drawable"
+local hit = require "src.util.hit"
 
 local Powerup = {}
 Powerup.__index = Powerup
 
 function Powerup:new()
-	local powerup = Mob:new()
-	powerup.sprite = Sprites.shroom
-	powerup.hit = Sounds.heal
-	powerup.age = 0
-	powerup.heal = 1
+	local spawnPoint = spawn.getSpawnPoint()
+	local powerup = {
+		x = spawnPoint.x,
+		y = spawnPoint.y,
+		rotation = 0,
+		size = 20,
+		sprite = Sprites.shroom,
+		hit = Sounds.heal,
+		age = 0,
+		heal = 1
+	}
 	setmetatable(powerup, Powerup)
 	return powerup
 end
@@ -31,19 +39,11 @@ function Powerup:deprecate(dt)
 end
 
 function Powerup:draw()
-	local w = self.sprite:getWidth()
-	local h = self.sprite:getHeight()
-	love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / w,
-		self.size / h,
-		w / 2, h / 2)
+	drawable.draw(self)
 end
 
 function Powerup:checkHit(x, y)
-	local halfSize = self.size / 2
-	return x > self.x - halfSize
-			and x < self.x + halfSize
-			and y > self.y - halfSize
-			and y < self.y + halfSize
+	return hit.checkHit(self, x, y)
 end
 
 return Powerup

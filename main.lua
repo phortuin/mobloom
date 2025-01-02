@@ -1,6 +1,7 @@
 -- init; loads assets and sets globals
 require "lib.init"
 local Mob = require "src.entities.mob"
+local Boss = require "src.entities.boss"
 local Decal = require "src.entities.decal"
 local Powerup = require "src.entities.powerup"
 
@@ -12,64 +13,6 @@ local Powerup = require "src.entities.powerup"
 -- giftige paddestoel spawnt meer paddestoelen (gpt zei "en monsters" :D) en als je daar overheen muist gaat je muis trager. of verlies je health?
 -- effect/event triggers en handlers
 -- health bars!
-
-
-local function createMonster()
-	local mob = Mob:new()
-	local monster = Monsters[math.random(#Monsters)]
-	mob.sprite = monster.sprite
-	mob.hp = 1
-	mob.damage = 1
-	mob.hit = monster.hit
-	mob.attackTimer = 0
-	mob.takeDamage = function(self, damage)
-		self.hp = self.hp - damage
-		self.takingDamage = true
-		if self.hp <= 0 then
-			Sounds.mobDie:stop()
-			Sounds.mobDie:play()
-		else
-			self.hit:stop()
-			self.hit:play()
-		end
-	end
-	mob.buildAttack = function(self, dt)
-		self.attackTimer = self.attackTimer + dt
-	end
-	mob.attackIfReady = function(self)
-		if self.attackTimer >= ATTACK_AFTER_SECONDS then
-			self.attackTimer = 0
-			Sounds.hit:stop()
-			Sounds.hit:play()
-			GameState.player.hp = GameState.player.hp - 1
-			self:attack()
-			self.size = 20
-		end
-	end
-
-	mob.attack = function(self)
-		self.size = 80
-		love.graphics.setColor(1, 0, 0, 1)
-		love.graphics.rectangle("fill", 0, 0, 800, 20)
-		love.graphics.rectangle("fill", 0, 0, 20, 600)
-		love.graphics.rectangle("fill", 780, 0, 800, 600)
-		love.graphics.rectangle("fill", 0, 580, 800, 600)
-		self:draw()
-	end
-	return mob
-end
-
-local function createBoss()
-	local mob = createMonster()
-	mob.sprite = Sprites.boss
-	mob.hp = 5
-	mob.size = 60
-	mob.smallestSize = 60
-	mob.largestSize = 100
-
-	return mob
-end
-
 
 function love.update(dt)
 	-- count towards next powerup spawn
@@ -84,7 +27,7 @@ function love.update(dt)
 	GameState.bossTimer = GameState.bossTimer + dt
 	if GameState.bossTimer > BOSS_SPAWN_INTERVAL then
 		GameState.bossTimer = 0
-		table.insert(GameState.monsters, createBoss())
+		table.insert(GameState.monsters, Boss:new())
 	end
 
 	-- remove dead monsters
@@ -110,7 +53,7 @@ function love.update(dt)
 
 	-- spawn monsters
 	if #GameState.monsters < 1 then
-		table.insert(GameState.monsters, createMonster())
+		table.insert(GameState.monsters, Mob:new())
 	end
 end
 
@@ -165,7 +108,7 @@ function love.mousepressed(x, y, button)
 			-- missed everything? add monster
 			Sounds.air:stop()
 			Sounds.air:play()
-			table.insert(GameState.monsters, createMonster())
+			table.insert(GameState.monsters, Mob:new())
 		end
 	end
 end

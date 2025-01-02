@@ -1,9 +1,12 @@
 local spawn = require "src.util.spawn"
+local drawable = require "src.util.drawable"
+local hit = require "src.util.hit"
 
 local Mob = {}
 Mob.__index = Mob
 
 function Mob:new()
+	local monster = Monsters[math.random(#Monsters)]
 	local spawnPoint = spawn.getSpawnPoint()
 	local mob = {
 		x = spawnPoint.x,
@@ -14,7 +17,11 @@ function Mob:new()
 		largestSize = Bounds.size_upper,
 		takingDamage = false,
 		takingDamageTimer = 0,
-		attackingTimer = 0
+		attackTimer = 0,
+		hp = 1,
+		damage = 1,
+		sprite = monster.sprite,
+		hit = monster.hit
 	}
 	setmetatable(mob, Mob)
 	return mob
@@ -28,6 +35,43 @@ function Mob:move()
 	self.rotation = self.rotation + dr
 end
 
+function Mob:takeDamage(damage)
+	self.hp = self.hp - damage
+	self.takingDamage = true
+	if self.hp <= 0 then
+		Sounds.mobDie:stop()
+		Sounds.mobDie:play()
+	else
+		self.hit:stop()
+		self.hit:play()
+	end
+end
+
+function Mob:buildAttack(dt)
+	self.attackTimer = self.attackTimer + dt
+end
+
+function Mob:attackIfReady()
+	if self.attackTimer >= ATTACK_AFTER_SECONDS then
+		self.attackTimer = 0
+		Sounds.hit:stop()
+		Sounds.hit:play()
+		GameState.player.hp = GameState.player.hp - 1
+		self:attack()
+		self.size = 20
+	end
+end
+
+function Mob:attack()
+	self.size = 80
+	love.graphics.setColor(1, 0, 0, 1)
+	love.graphics.rectangle("fill", 0, 0, 800, 20)
+	love.graphics.rectangle("fill", 0, 0, 20, 600)
+	love.graphics.rectangle("fill", 780, 0, 800, 600)
+	love.graphics.rectangle("fill", 0, 580, 800, 600)
+	self:draw()
+end
+
 function Mob:update(dt)
 	if self.takingDamage then
 		self.takingDamageTimer = self.takingDamageTimer + dt
@@ -39,31 +83,15 @@ function Mob:update(dt)
 end
 
 function Mob:draw()
-	local w = self.sprite:getWidth()
-	local h = self.sprite:getHeight()
-	-- draw hitbox
-	-- love.graphics.setColor(1, 0, 1, 1)
-	-- love.graphics.rectangle("fill", self.x - self.size / 2, self.y - self.size / 2, self.size, self.size)
-	-- love.graphics.setColor(1, 1, 1, 1)
 	if self.takingDamageTimer > 0 then
-		love.graphics.setColor(1, 0, 0, 1)
-		love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), (self.size - 10) / w,
-			(self.size - 10) / h,
-			w / 2, h / 2)
-		love.graphics.setColor(1, 1, 1, 1)
+		drawable.drawTakingDamage(self)
 	else
-		love.graphics.draw(self.sprite, self.x, self.y, math.rad(self.rotation), self.size / w,
-			self.size / h,
-			w / 2, h / 2)
+		drawable.draw(self)
 	end
 end
 
 function Mob:checkHit(x, y)
-	local halfSize = self.size / 2
-	return x > self.x - halfSize
-			and x < self.x + halfSize
-			and y > self.y - halfSize
-			and y < self.y + halfSize
+	return hit.checkHit(self, x, y)
 end
 
 return Mob
