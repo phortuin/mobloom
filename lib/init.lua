@@ -6,38 +6,38 @@ Sounds = {}
 
 local function loadAssets()
 	Sprites.monsters = {
-		[1] = love.graphics.newImage("assets/space.png"),
-		[2] = love.graphics.newImage("assets/ghost.png"),
-		[3] = love.graphics.newImage("assets/cringe.png"),
+		[1] = love.graphics.newImage("assets/sprites/space.png"),
+		[2] = love.graphics.newImage("assets/sprites/ghost.png"),
+		[3] = love.graphics.newImage("assets/sprites/cringe.png"),
 	}
 	Sprites.moneys = {
-		[1] = love.graphics.newImage("assets/bag.png"),
-		[2] = love.graphics.newImage("assets/dollar.png"),
+		[1] = love.graphics.newImage("assets/sprites/bag.png"),
+		[2] = love.graphics.newImage("assets/sprites/dollar.png"),
 	}
-	Sprites.sword = love.graphics.newImage("assets/sword.png")
-	Sprites.heart = love.graphics.newImage("assets/heart.png")
-	Sprites.shroom = love.graphics.newImage("assets/shroom.png")
-	Sprites.shroomBad = love.graphics.newImage("assets/shroom-bad.png")
-	Sprites.boss = love.graphics.newImage("assets/boss-tree.png")
-	Sprites.splat = love.graphics.newImage("assets/splat.png")
-	local cursor = love.mouse.newCursor("assets/cursor.png")
+	Sprites.sword = love.graphics.newImage("assets/sprites/sword.png")
+	Sprites.heart = love.graphics.newImage("assets/sprites/heart.png")
+	Sprites.shroom = love.graphics.newImage("assets/sprites/shroom.png")
+	Sprites.shroomBad = love.graphics.newImage("assets/sprites/shroom-bad.png")
+	Sprites.boss = love.graphics.newImage("assets/sprites/boss-tree.png")
+	Sprites.splat = love.graphics.newImage("assets/sprites/splat.png")
+	local cursor = love.mouse.newCursor("assets/sprites/cursor.png")
 
 	love.mouse.setCursor(cursor)
 
-	Sounds.coin = love.audio.newSource("assets/coin-single.wav", "static")
-	Sounds.coins = love.audio.newSource("assets/coin-many.wav", "static")
-	Sounds.lost = love.audio.newSource("assets/coin-lost.wav", "static")
-	Sounds.hit = love.audio.newSource("assets/hit.wav", "static")
-	Sounds.hitMob = love.audio.newSource("assets/hit-mob.wav", "static")
-	Sounds.mobDie = love.audio.newSource("assets/mob-die.wav", "static")
-	Sounds.air = love.audio.newSource("assets/air.wav", "static")
-	Sounds.swordGet = love.audio.newSource("assets/sword-get.wav", "static")
-	Sounds.heal = love.audio.newSource("assets/heal.wav", "static")
-	Sounds.shroomBad = love.audio.newSource("assets/shroom-bad.wav", "static")
+	Sounds.coin = love.audio.newSource("assets/sounds/coin-single.wav", "static")
+	Sounds.coins = love.audio.newSource("assets/sounds/coin-many.wav", "static")
+	Sounds.lost = love.audio.newSource("assets/sounds/coin-lost.wav", "static")
+	Sounds.hit = love.audio.newSource("assets/sounds/hit.wav", "static")
+	Sounds.hitMob = love.audio.newSource("assets/sounds/hit-mob.wav", "static")
+	Sounds.mobDie = love.audio.newSource("assets/sounds/mob-die.wav", "static")
+	Sounds.air = love.audio.newSource("assets/sounds/air.wav", "static")
+	Sounds.swordGet = love.audio.newSource("assets/sounds/sword-get.wav", "static")
+	Sounds.heal = love.audio.newSource("assets/sounds/heal.wav", "static")
+	Sounds.shroomBad = love.audio.newSource("assets/sounds/shroom-bad.wav", "static")
 end
 
 Effect = moonshine(moonshine.effects.glow)
-love.graphics.setNewFont("assets/JetBrainsMono-Bold.ttf", 30)
+love.graphics.setNewFont("assets/fonts/JetBrainsMono-Bold.ttf", 30)
 loadAssets()
 
 SCORE_LENGTH = 4
