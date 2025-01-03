@@ -56,9 +56,9 @@ function Mob:attackIfReady()
 		self.attackTimer = 0
 		Sounds.hit:stop()
 		Sounds.hit:play()
-		GameState.player.hp = GameState.player.hp - 1
 		self:attack()
 		self.size = 20
+		return true
 	end
 end
 

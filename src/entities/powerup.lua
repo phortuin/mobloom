@@ -24,9 +24,6 @@ end
 function Powerup:consume()
 	self.hit:stop()
 	self.hit:play()
-	GameState.player.hp = GameState.player.hp + self.heal
-	GameState.powerupTimer = 0
-	GameState.powerups = {}
 end
 
 function Powerup:deprecate(dt)

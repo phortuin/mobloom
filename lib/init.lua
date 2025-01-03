@@ -72,19 +72,6 @@ Bounds = {
 	size_upper = 40,
 }
 
-GameState = {
-	powerupTimer = 0,
-	bossTimer = 0,
-	bosses = {},
-	monsters = {},
-	powerups = {},
-	decals = {},
-	player = {
-		hp = MAX_HP,
-		score = 5,
-	}
-}
-
 Monsters = {
 	{
 		name = "space",
