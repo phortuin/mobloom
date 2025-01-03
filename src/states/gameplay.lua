@@ -1,5 +1,5 @@
 local Mob = require "src.entities.mob"
-local Boss = require "src.entities.mob"
+local Boss = require "src.entities.boss"
 local Powerup = require "src.entities.powerup"
 local Decal = require "src.entities.decal"
 
