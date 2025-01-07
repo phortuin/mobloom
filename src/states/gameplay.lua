@@ -2,6 +2,7 @@ local Mob = require "src.entities.mob"
 local Boss = require "src.entities.boss"
 local Powerup = require "src.entities.powerup"
 local Decal = require "src.entities.decal"
+local Health = require "src.systems.health"
 
 local Gameplay = {}
 
@@ -16,7 +17,7 @@ local bossTimer = 0
 -- Initialize gameplay state
 function Gameplay:enter()
 	player = {
-		hp = MAX_HP,
+		health = Health:new(MAX_HP, MAX_HP),
 		score = 5
 	}
 	monsters = {
@@ -42,7 +43,7 @@ function Gameplay:update(dt)
 
 	-- remove dead monsters
 	for m = #monsters, 1, -1 do
-		if monsters[m].hp <= 0 then
+		if monsters[m].health:isDead() then
 			local decal = Decal:new(monsters[m])
 			table.insert(decals, decal)
 			table.remove(monsters, m)
@@ -69,9 +70,7 @@ end
 
 function Gameplay:draw()
 	-- draw health
-	for i = 0, player.hp - 1 do
-		love.graphics.draw(Sprites.heart, 50 + (i * 30), 50, 0, 3, 3)
-	end
+	player.health:draw()
 
 	-- draw score
 	love.graphics.setColor(1, 0.8, 0.2, 1)
@@ -89,7 +88,7 @@ function Gameplay:draw()
 	for _, monster in ipairs(monsters) do
 		monster:draw()
 		if (monster:attackIfReady()) then
-			player.hp = player.hp - 1
+			player.health:takeDamage(1)
 		end
 	end
 end
@@ -107,7 +106,7 @@ function Gameplay:mousepressed(x, y, button)
 			if powerup:checkHit(x, y) then
 				hit = true
 				powerup:consume()
-				player.hp = player.hp + powerup.heal
+				player.health:heal(powerup.heal)
 				powerupTimer = 0
 				powerups = {}
 			end

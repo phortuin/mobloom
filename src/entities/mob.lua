@@ -2,6 +2,8 @@ local spawn = require "src.util.spawn"
 local drawable = require "src.util.drawable"
 local hit = require "src.util.hit"
 
+local Health = require "src.systems.health"
+
 local Mob = {}
 Mob.__index = Mob
 
@@ -18,7 +20,7 @@ function Mob:new()
 		takingDamage = false,
 		takingDamageTimer = 0,
 		attackTimer = 0,
-		hp = 1,
+		health = Health:new(1),
 		damage = 1,
 		sprite = monster.sprite,
 		hit = monster.hit
@@ -36,9 +38,9 @@ function Mob:move()
 end
 
 function Mob:takeDamage(damage)
-	self.hp = self.hp - damage
+	self.health:takeDamage(damage)
 	self.takingDamage = true
-	if self.hp <= 0 then
+	if self.health:isDead() then
 		Sounds.mobDie:stop()
 		Sounds.mobDie:play()
 	else

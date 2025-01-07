@@ -1,4 +1,4 @@
-local drawable = require 'src.util.drawable'
+local drawable = require "src.util.drawable"
 
 local Decal = {}
 Decal.__index = Decal
