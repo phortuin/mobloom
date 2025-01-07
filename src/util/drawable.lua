@@ -23,6 +23,17 @@ function drawable.drawRectangle(entity)
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
+function drawable.drawTarget(entity, color)
+	color = color or "red"
+	if color == "blue" then
+		love.graphics.setColor(0, 0.5, 1, 0.5)
+	else
+		love.graphics.setColor(1, 0, 0, 0.5)
+	end
+	love.graphics.circle("fill", entity.x, entity.y, entity.size)
+	love.graphics.setColor(1, 1, 1, 1)
+end
+
 function drawable.drawTakingDamage(entity)
 	local w = entity.sprite:getWidth()
 	local h = entity.sprite:getHeight()

@@ -85,6 +85,10 @@ function Mob:update(dt)
 end
 
 function Mob:draw()
+	local x, y = love.mouse.getPosition()
+	if self:checkHit(x, y) then
+		drawable.drawTarget(self)
+	end
 	if self.takingDamageTimer > 0 then
 		drawable.drawTakingDamage(self)
 	else

@@ -36,6 +36,14 @@ function Powerup:deprecate(dt)
 end
 
 function Powerup:draw()
+	local x, y = love.mouse.getPosition()
+	if self:checkHit(x, y) then
+		if self.heal > 0 then
+			drawable.drawTarget(self, "blue")
+		else
+			drawable.drawTarget(self, "red")
+		end
+	end
 	drawable.draw(self)
 end
 
