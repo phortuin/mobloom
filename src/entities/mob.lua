@@ -60,13 +60,13 @@ function Mob:attackIfReady()
 		Sounds.hit:stop()
 		Sounds.hit:play()
 		self:attack()
-		self.size = 20
+		self.size = 24
 		return true
 	end
 end
 
 function Mob:attack()
-	self.size = 80
+	self.size = 96
 	love.graphics.setColor(1, 0, 0, 1)
 	love.graphics.rectangle("fill", 0, 0, 800, 20)
 	love.graphics.rectangle("fill", 0, 0, 20, 600)

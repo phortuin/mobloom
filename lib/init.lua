@@ -72,8 +72,8 @@ Bounds = {
 	x_lower = 20,
 	y_upper = 580,
 	y_lower = 20,
-	size_lower = 20,
-	size_upper = 40,
+	size_lower = 24,
+	size_upper = 48,
 }
 
 Monsters = {

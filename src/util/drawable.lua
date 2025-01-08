@@ -38,8 +38,8 @@ function drawable.drawTakingDamage(entity)
 	local w = entity.sprite:getWidth()
 	local h = entity.sprite:getHeight()
 	love.graphics.setColor(1, 0, 0, 1)
-	love.graphics.draw(entity.sprite, entity.x, entity.y, math.rad(entity.rotation), (entity.size - 10) / w,
-		(entity.size - 10) / h,
+	love.graphics.draw(entity.sprite, entity.x, entity.y, math.rad(entity.rotation), (entity.size - 16) / w,
+		(entity.size - 16) / h,
 		w / 2, h / 2)
 	love.graphics.setColor(1, 1, 1, 1)
 end

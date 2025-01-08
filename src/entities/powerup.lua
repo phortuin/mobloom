@@ -11,7 +11,7 @@ function Powerup:new()
 		x = spawnPoint.x,
 		y = spawnPoint.y,
 		rotation = 0,
-		size = 20,
+		size = 24,
 		sprite = Sprites.shroom,
 		hit = Sounds.heal,
 		age = 0,
