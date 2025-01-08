@@ -1,24 +1,27 @@
 local drawable = {}
 
-function drawable.draw(entity)
+function drawable.draw(entity, opacity)
+	opacity = opacity or 1
 	if entity.sprite then
-		drawable.drawSprite(entity)
+		drawable.drawSprite(entity, opacity)
 	else
-		drawable.drawRectangle(entity)
+		drawable.drawRectangle(entity, opacity)
 	end
 end
 
-function drawable.drawSprite(entity)
+function drawable.drawSprite(entity, opacity)
 	local w = entity.sprite:getWidth()
 	local h = entity.sprite:getHeight()
+	love.graphics.setColor(1, 1, 1, opacity)
 	love.graphics.draw(entity.sprite, entity.x, entity.y, math.rad(entity.rotation), entity.size / w,
 		entity.size / h,
 		w / 2, h / 2)
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 -- dit is bedacht door de robot
-function drawable.drawRectangle(entity)
-	love.graphics.setColor(1, 0, 1, 1)
+function drawable.drawRectangle(entity, opacity)
+	love.graphics.setColor(1, 0, 1, opacity)
 	love.graphics.rectangle("fill", entity.x - entity.size / 2, entity.y - entity.size / 2, entity.size, entity.size)
 	love.graphics.setColor(1, 1, 1, 1)
 end
