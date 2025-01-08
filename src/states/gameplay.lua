@@ -2,6 +2,7 @@ local Mob = require "src.entities.mob"
 local Boss = require "src.entities.boss"
 local Powerup = require "src.entities.powerup"
 local Decal = require "src.entities.decal"
+local Coin = require "src.entities.coin"
 local Health = require "src.systems.health"
 
 local Gameplay = {}
@@ -11,6 +12,7 @@ local monsters = {}
 local powerups = {}
 local bosses = {}
 local decals = {}
+local coins = {}
 local powerupTimer = 0
 local bossTimer = 0
 
@@ -44,9 +46,29 @@ function Gameplay:update(dt)
 	-- remove dead monsters
 	for m = #monsters, 1, -1 do
 		if monsters[m].health:isDead() then
-			local decal = Decal:new(monsters[m])
-			table.insert(decals, decal)
+			for _ = 1, monsters[m].coins do
+				table.insert(coins, Coin:new(monsters[m]))
+			end
+			table.insert(decals, Decal:new(monsters[m]))
 			table.remove(monsters, m)
+		end
+	end
+
+	-- coins upkeep
+	for _, coin in ipairs(coins) do
+		coin:move(dt)
+		if coin:hit() then
+			player.score = player.score + 1
+			Sounds.coinDing:stop()
+			Sounds.coinDing:play()
+			coin:die()
+		end
+	end
+
+	-- remove expired coins
+	for c = #coins, 1, -1 do
+		if coins[c].age >= COIN_LASTS then
+			table.remove(coins, c)
 		end
 	end
 
@@ -84,6 +106,9 @@ function Gameplay:draw()
 	end
 	for _, powerup in ipairs(powerups) do
 		powerup:draw()
+	end
+	for _, coin in ipairs(coins) do
+		coin:draw()
 	end
 	for _, monster in ipairs(monsters) do
 		monster:draw()

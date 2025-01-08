@@ -23,7 +23,8 @@ function Mob:new()
 		health = Health:new(1),
 		damage = 1,
 		sprite = monster.sprite,
-		hit = monster.hit
+		hit = monster.hit,
+		coins = 1,
 	}
 	setmetatable(mob, Mob)
 	return mob

@@ -20,11 +20,13 @@ local function loadAssets()
 	Sprites.shroomBad = love.graphics.newImage("assets/sprites/shroom-bad.png")
 	Sprites.boss = love.graphics.newImage("assets/sprites/boss-tree.png")
 	Sprites.splat = love.graphics.newImage("assets/sprites/splat.png")
+	Sprites.coin = love.graphics.newImage("assets/sprites/coin.png")
 	local cursor = love.mouse.newCursor("assets/sprites/cursor.png")
 
 	love.mouse.setCursor(cursor)
 
 	Sounds.coin = love.audio.newSource("assets/sounds/coin-single.wav", "static")
+	Sounds.coinDing = love.audio.newSource("assets/sounds/coin-ding.wav", "static")
 	Sounds.coins = love.audio.newSource("assets/sounds/coin-many.wav", "static")
 	Sounds.lost = love.audio.newSource("assets/sounds/coin-lost.wav", "static")
 	Sounds.hit = love.audio.newSource("assets/sounds/hit.wav", "static")
@@ -50,6 +52,8 @@ POWERUP_SPAWN_INTERVAL = 10
 BOSS_SPAWN_INTERVAL = 10
 POWERUP_AGED_AFTER = 5
 TAKING_DAMAGE_LASTS = 0.07
+
+COIN_LASTS = 3
 
 Wrap = function(value, lower, upper)
 	if value > upper then return lower end
