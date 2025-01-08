@@ -10,6 +10,7 @@ local Gameplay = require "src.states.gameplay"
 -- giftige paddestoel spawnt meer paddestoelen (gpt zei "en monsters" :D) en als je daar overheen muist gaat je muis trager. of verlies je health?
 -- effect/event triggers en handlers
 -- health bars!
+-- levels, dus na bijv 20 mobs ga je een level omhoog en wordt het moeilijker
 
 local currentState
 
