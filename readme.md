@@ -2,6 +2,8 @@
 
 > A little game where you kill mobs before they kill you instead!
 
+![Mobloom gameplay screenshot](assets/screenshots/mobloom.png)
+
 ## Tech
 
 - This is a [Lua](https://lua.org/) code base, built on top of the [LÖVE](https://love2d.org/) game development framework
