@@ -16,6 +16,8 @@ local function loadAssets()
 	}
 	Sprites.sword = love.graphics.newImage("assets/sprites/sword.png")
 	Sprites.heart = love.graphics.newImage("assets/sprites/heart.png")
+	Sprites.heartHalf = love.graphics.newImage("assets/sprites/heart-half.png")
+	Sprites.heartEmpty = love.graphics.newImage("assets/sprites/heart-empty.png")
 	Sprites.shroom = love.graphics.newImage("assets/sprites/shroom.png")
 	Sprites.shroomBad = love.graphics.newImage("assets/sprites/shroom-bad.png")
 	Sprites.boss = love.graphics.newImage("assets/sprites/boss-tree.png")
@@ -47,6 +49,7 @@ SCORE_LENGTH = 4
 ATTACK_AFTER = 200
 MAX_HP = 5
 AGE_AFTER = 500
+MAX_HP = 10
 
 ATTACK_AFTER_SECONDS = 5
 POWERUP_SPAWN_INTERVAL = 10

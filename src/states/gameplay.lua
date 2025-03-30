@@ -92,7 +92,7 @@ end
 
 function Gameplay:draw()
 	-- draw health
-	player.health:draw()
+	player.health:drawPlayerHealth()
 
 	-- draw score
 	love.graphics.setColor(1, 0.8, 0.2, 1)

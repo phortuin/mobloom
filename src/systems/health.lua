@@ -26,9 +26,17 @@ function Health:isDead()
 end
 
 -- player only I suppose
-function Health:draw()
-	for i = 0, self.hp - 1 do
-		love.graphics.draw(Sprites.heart, 50 + (i * 30), 50, 0, 3, 3)
+function Health:drawPlayerHealth()
+	for i = 1, self.maxHp / 2 do
+		if i * 2 > self.hp then
+			if (i - 1) * 2 < self.hp then
+				love.graphics.draw(Sprites.heartHalf, i * 30, 30, 0, 3, 3)
+			else
+				love.graphics.draw(Sprites.heartEmpty, i * 30, 30, 0, 3, 3)
+			end
+		else
+			love.graphics.draw(Sprites.heart, i * 30, 30, 0, 3, 3)
+		end
 	end
 end
 
