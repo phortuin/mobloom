@@ -23,6 +23,8 @@ local function loadAssets()
 	Sprites.coin = love.graphics.newImage("assets/sprites/coin.png")
 	local cursor = love.mouse.newCursor("assets/sprites/cursor.png")
 
+	local cursor = love.mouse.newCursor("assets/sprites/cursor.png", 4, 3)
+
 	love.mouse.setCursor(cursor)
 
 	Sounds.coin = love.audio.newSource("assets/sounds/coin-single.wav", "static")
