@@ -8,11 +8,12 @@ setmetatable(Boss, { __index = Mob })
 function Boss:new()
 	local boss = setmetatable(Mob:new(), Boss)
 	boss.sprite = Sprites.boss
-	boss.health = Health:new(5)
+	boss.health = Health:new(5, 5)
 	boss.size = 72
 	boss.smallestSize = 72
 	boss.largestSize = 120
 	boss.coins = 3
+	boss.showHealth = true
 	return boss
 end
 

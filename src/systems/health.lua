@@ -40,4 +40,13 @@ function Health:drawPlayerHealth()
 	end
 end
 
+function Health:drawMobHealth(entity)
+	local halfSize = entity.smallestSize / 2
+	love.graphics.setColor(1, 1, 1, 0.2)
+	love.graphics.rectangle("fill", entity.x - halfSize, entity.y - halfSize - 20, entity.smallestSize, 4)
+	love.graphics.setColor(1, 0, 0, 1)
+	love.graphics.rectangle("fill", entity.x - halfSize, entity.y - halfSize - 20,
+		self.hp / self.maxHp * entity.smallestSize, 4)
+end
+
 return Health

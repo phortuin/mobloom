@@ -20,11 +20,12 @@ function Mob:new()
 		takingDamage = false,
 		takingDamageTimer = 0,
 		attackTimer = 0,
-		health = Health:new(1),
+		health = Health:new(1, 1),
 		damage = 1,
 		sprite = monster.sprite,
 		hit = monster.hit,
 		coins = 1,
+		showHealth = false,
 	}
 	setmetatable(mob, Mob)
 	return mob
@@ -94,6 +95,10 @@ function Mob:draw()
 		drawable.drawTakingDamage(self)
 	else
 		drawable.draw(self)
+	end
+
+	if self.showHealth then
+		self.health:drawMobHealth(self)
 	end
 end
 
