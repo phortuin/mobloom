@@ -19,6 +19,7 @@ local coins
 local powerupTimer
 local boltTimer
 local bossTimer
+local isGameOver = false
 local grass
 
 local flash
@@ -59,6 +60,10 @@ function Gameplay:enter()
 end
 
 function Gameplay:update(dt)
+	if isGameOver then
+		return
+	end
+
 	-- count towards next powerup spawn
 	powerupTimer = powerupTimer + dt
 	if powerupTimer > POWERUP_SPAWN_INTERVAL
@@ -135,6 +140,10 @@ function Gameplay:update(dt)
 	if #monsters < 1 then
 		table.insert(monsters, Mob:new())
 	end
+
+	if player.health:isDead() then
+		isGameOver = true
+	end
 end
 
 function Gameplay:draw()
@@ -155,6 +164,14 @@ function Gameplay:draw()
 			x = x, y = y, size = 40
 		}, "faint-grey")
 	end
+
+	if isGameOver then
+		love.graphics.setColor(1, 0, 0, 1)
+		love.graphics.print("GAME OVER", 310, 270)
+		love.graphics.setColor(1, 1, 1, 1)
+		return
+	end
+
 	-- draw health
 	player.health:drawPlayerHealth()
 
@@ -240,6 +257,10 @@ function Gameplay:mousepressed(x, y, button)
 			Sounds.air:stop()
 			Sounds.air:play()
 			table.insert(monsters, Mob:new())
+		end
+		if isGameOver then
+			Gameplay:enter()
+			isGameOver = false
 		end
 	end
 end
