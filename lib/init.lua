@@ -21,7 +21,6 @@ local function loadAssets()
 	Sprites.boss = love.graphics.newImage("assets/sprites/boss-tree.png")
 	Sprites.splat = love.graphics.newImage("assets/sprites/splat.png")
 	Sprites.coin = love.graphics.newImage("assets/sprites/coin.png")
-	local cursor = love.mouse.newCursor("assets/sprites/cursor.png")
 
 	local cursor = love.mouse.newCursor("assets/sprites/cursor.png", 4, 3)
 
