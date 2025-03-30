@@ -18,8 +18,25 @@ local powerupTimer = 0
 local bossTimer = 0
 local bolts
 local boltTimer
+local grass
+
 local flash
 
+local function makeGrass()
+	local _grass = {}
+	for i = 1, 30 do
+		local spawnPoint = spawn.getSpawnPoint()
+		table.insert(_grass, {
+			x = spawnPoint.x,
+			y = spawnPoint.y,
+			sprite = Sprites.grass,
+			size = (math.random() * 10) + 20,
+			rotation = (math.random() * 20) - 10,
+			opacity = (math.random() / 2) + 0.5
+		})
+	end
+	return _grass
+end
 -- Initialize gameplay state
 function Gameplay:enter()
 	player = {
@@ -29,6 +46,7 @@ function Gameplay:enter()
 	monsters = {
 		Mob:new()
 	}
+	grass = makeGrass()
 	bolts = {}
 	boltTimer = 0
 end
@@ -126,6 +144,9 @@ function Gameplay:draw()
 
 	for _, decal in ipairs(decals) do
 		decal:draw()
+	end
+	for _, _grass in ipairs(grass) do
+		drawable.draw(_grass, _grass.opacity)
 	end
 	for _, powerup in ipairs(powerups) do
 		powerup:draw()
