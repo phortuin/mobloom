@@ -9,10 +9,8 @@ local function loadAssets()
 		[1] = love.graphics.newImage("assets/sprites/space.png"),
 		[2] = love.graphics.newImage("assets/sprites/ghost.png"),
 		[3] = love.graphics.newImage("assets/sprites/cringe.png"),
-	}
-	Sprites.moneys = {
-		[1] = love.graphics.newImage("assets/sprites/bag.png"),
-		[2] = love.graphics.newImage("assets/sprites/dollar.png"),
+		[4] = love.graphics.newImage("assets/sprites/boy.png"),
+		[5] = love.graphics.newImage("assets/sprites/you.png"),
 	}
 	Sprites.sword = love.graphics.newImage("assets/sprites/sword.png")
 	Sprites.heart = love.graphics.newImage("assets/sprites/heart.png")
@@ -99,4 +97,16 @@ Monsters = {
 		hit = Sounds.hitMob,
 		miss = Sounds.air
 	},
+	{
+		name = "boy",
+		sprite = Sprites.monsters[4],
+		hit = Sounds.hitMob,
+		miss = Sounds.air
+	},
+	{
+		name = "you",
+		sprite = Sprites.monsters[5],
+		hit = Sounds.hitMob,
+		miss = Sounds.air
+	}
 }
