@@ -27,5 +27,5 @@ $ love .
 ## Assets and credits
 
 - Audio from various sources, free to use
-- Font: [JetBrains Mono](https://www.jetbrains.com/lp/mono/)
+- Font: [Chivo Bold](https://www.omnibus-type.com/fonts/chivo/)
 - Sprites are my own, crafted with [Aseprite](https://www.aseprite.org/)

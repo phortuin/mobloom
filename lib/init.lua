@@ -39,7 +39,7 @@ local function loadAssets()
 end
 
 Effect = moonshine(moonshine.effects.glow)
-love.graphics.setNewFont("assets/fonts/JetBrainsMono-Bold.ttf", 30)
+love.graphics.setNewFont("assets/fonts/Chivo-Bold.ttf", 30)
 love.graphics.setDefaultFilter("nearest", "nearest", 0)
 loadAssets()
 
