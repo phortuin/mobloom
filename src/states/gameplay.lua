@@ -1,6 +1,7 @@
 local Mob = require "src.entities.mob"
 local Boss = require "src.entities.boss"
 local Powerup = require "src.entities.powerup"
+local Bolt = require "src.entities.bolt"
 local Decal = require "src.entities.decal"
 local Coin = require "src.entities.coin"
 local Health = require "src.systems.health"
@@ -15,6 +16,9 @@ local decals = {}
 local coins = {}
 local powerupTimer = 0
 local bossTimer = 0
+local bolts
+local boltTimer
+local flash
 
 -- Initialize gameplay state
 function Gameplay:enter()
@@ -25,6 +29,8 @@ function Gameplay:enter()
 	monsters = {
 		Mob:new()
 	}
+	bolts = {}
+	boltTimer = 0
 end
 
 function Gameplay:update(dt)
@@ -33,6 +39,13 @@ function Gameplay:update(dt)
 	if powerupTimer > POWERUP_SPAWN_INTERVAL
 			and #powerups < 1 then
 		table.insert(powerups, Powerup:new())
+	end
+
+	-- count towards next bolt spawn
+	boltTimer = boltTimer + dt
+	if boltTimer > BOLT_SPAWN_INTERVAL
+			and #bolts < 1 then
+		table.insert(bolts, Bolt:new())
 	end
 
 	-- count towards boss arrival. bosses are monsters and
@@ -84,6 +97,15 @@ function Gameplay:update(dt)
 		powerup:deprecate(dt)
 	end
 
+	-- age bolts
+	for _, bolt in ipairs(bolts) do
+		bolt:deprecate(dt)
+		if bolt.age >= BOLT_AGED_AFTER then
+			bolts = {}
+			boltTimer = 0
+		end
+	end
+
 	-- spawn monsters
 	if #monsters < 1 then
 		table.insert(monsters, Mob:new())
@@ -91,6 +113,9 @@ function Gameplay:update(dt)
 end
 
 function Gameplay:draw()
+	for _, bolt in ipairs(bolts) do
+		if bolt:checkHit(x, y) then mouseOver = true end
+	end
 	-- draw health
 	player.health:drawPlayerHealth()
 
@@ -105,6 +130,9 @@ function Gameplay:draw()
 	for _, powerup in ipairs(powerups) do
 		powerup:draw()
 	end
+	for _, bolt in ipairs(bolts) do
+		bolt:draw()
+	end
 	for _, coin in ipairs(coins) do
 		coin:draw()
 	end
@@ -113,6 +141,13 @@ function Gameplay:draw()
 		if (monster:attackIfReady()) then
 			player.health:takeDamage(1)
 		end
+	end
+
+	-- draw sfx
+	if flash then
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.rectangle("fill", 0, 0, 800, 600)
+		flash = false
 	end
 end
 
@@ -132,6 +167,29 @@ function Gameplay:mousepressed(x, y, button)
 				player.health:heal(powerup.heal)
 				powerupTimer = 0
 				powerups = {}
+			end
+		end
+		for _, bolt in ipairs(bolts) do
+			if bolt:checkHit(x, y) then
+				hit = true
+				-- kills all monsters
+				for _, monster in ipairs(monsters) do
+					monster:takeDamage(10)
+				end
+				-- deprecates shrooms to rotten shrooms
+				-- or kills rotten shrooms
+				for _, powerup in ipairs(powerups) do
+					if powerup.heal < 0 then
+						powerupTimer = 0
+						powerups = {}
+					end
+					powerup:deprecate(100)
+				end
+
+				bolt:consume()
+				boltTimer = 0
+				flash = true
+				bolts = {}
 			end
 		end
 		if not hit then

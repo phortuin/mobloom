@@ -5,7 +5,7 @@ function spawn.getSpawnPoint()
 		x = math.random(Bounds.x_lower, Bounds.x_upper),
 		y = math.random(Bounds.y_lower, Bounds.y_upper),
 		rotation = 0,
-		size = 3
+		size = 20
 	}
 end
 

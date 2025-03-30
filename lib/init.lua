@@ -20,6 +20,7 @@ local function loadAssets()
 	Sprites.shroomBad = love.graphics.newImage("assets/sprites/shroom-bad.png")
 	Sprites.boss = love.graphics.newImage("assets/sprites/boss-tree.png")
 	Sprites.splat = love.graphics.newImage("assets/sprites/splat.png")
+	Sprites.bolt = love.graphics.newImage("assets/sprites/bolt.png")
 	Sprites.coin = love.graphics.newImage("assets/sprites/coin.png")
 
 	local cursor = love.mouse.newCursor("assets/sprites/cursor.png", 4, 3)
@@ -37,6 +38,7 @@ local function loadAssets()
 	Sounds.swordGet = love.audio.newSource("assets/sounds/sword-get.wav", "static")
 	Sounds.heal = love.audio.newSource("assets/sounds/heal.wav", "static")
 	Sounds.shroomBad = love.audio.newSource("assets/sounds/shroom-bad.wav", "static")
+	Sounds.bolt = love.audio.newSource("assets/sounds/bolt.wav", "static")
 end
 
 Effect = moonshine(moonshine.effects.glow)
@@ -54,8 +56,10 @@ MAX_HP = 10
 
 ATTACK_AFTER_SECONDS = 5
 POWERUP_SPAWN_INTERVAL = 10
+BOLT_SPAWN_INTERVAL = 20
 BOSS_SPAWN_INTERVAL = 10
 POWERUP_AGED_AFTER = 5
+BOLT_AGED_AFTER = 5
 TAKING_DAMAGE_LASTS = 0.07
 
 COIN_LASTS = 3
