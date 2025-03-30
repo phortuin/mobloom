@@ -41,6 +41,8 @@ local function loadAssets()
 end
 
 Effect = moonshine(moonshine.effects.glow)
+Effect.glow.min_luma = 0.2
+
 love.graphics.setNewFont("assets/fonts/Chivo-Bold.ttf", 30)
 love.graphics.setDefaultFilter("nearest", "nearest", 0)
 loadAssets()
