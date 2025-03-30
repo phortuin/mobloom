@@ -15,7 +15,7 @@ function Powerup:new()
 		sprite = Sprites.shroom,
 		hit = Sounds.heal,
 		age = 0,
-		heal = 1
+		heal = 2
 	}
 	setmetatable(powerup, Powerup)
 	return powerup
@@ -41,7 +41,7 @@ function Powerup:draw()
 		if self.heal > 0 then
 			drawable.drawTarget(self, "blue")
 		else
-			drawable.drawTarget(self, "red")
+			drawable.drawTarget(self, "green")
 		end
 	end
 	drawable.draw(self)

@@ -26,6 +26,8 @@ function Mob:new()
 		hit = monster.hit,
 		coins = 1,
 		showHealth = false,
+		targetColor = "grey",
+		attackAfter = ATTACK_AFTER
 	}
 	setmetatable(mob, Mob)
 	return mob
@@ -56,7 +58,7 @@ function Mob:buildAttack(dt)
 end
 
 function Mob:attackIfReady()
-	if self.attackTimer >= ATTACK_AFTER_SECONDS then
+	if self.attackTimer >= self.attackAfter then
 		self.attackTimer = 0
 		Sounds.hit:stop()
 		Sounds.hit:play()
@@ -88,9 +90,11 @@ end
 
 function Mob:draw()
 	local x, y = love.mouse.getPosition()
+
 	if self:checkHit(x, y) then
-		drawable.drawTarget(self)
+		drawable.drawTarget(self, self.targetColor)
 	end
+
 	if self.takingDamageTimer > 0 then
 		drawable.drawTakingDamage(self)
 	else

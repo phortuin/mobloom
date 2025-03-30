@@ -13,7 +13,10 @@ function Boss:new()
 	boss.smallestSize = 72
 	boss.largestSize = 120
 	boss.coins = 3
+	boss.damage = 2
 	boss.showHealth = true
+	boss.targetColor = "red"
+	boss.attackAfter = BOSS_ATTACK_AFTER
 	return boss
 end
 

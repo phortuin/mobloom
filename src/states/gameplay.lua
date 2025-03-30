@@ -5,19 +5,20 @@ local Bolt = require "src.entities.bolt"
 local Decal = require "src.entities.decal"
 local Coin = require "src.entities.coin"
 local Health = require "src.systems.health"
+local drawable = require "src.util.drawable"
+local spawn = require "src.util.spawn"
 
 local Gameplay = {}
 
-local player = {}
-local monsters = {}
-local powerups = {}
-local bosses = {}
-local decals = {}
-local coins = {}
-local powerupTimer = 0
-local bossTimer = 0
+local player
+local monsters
+local powerups
 local bolts
+local decals
+local coins
+local powerupTimer
 local boltTimer
+local bossTimer
 local grass
 
 local flash
@@ -37,18 +38,24 @@ local function makeGrass()
 	end
 	return _grass
 end
+
 -- Initialize gameplay state
 function Gameplay:enter()
 	player = {
 		health = Health:new(MAX_HP, MAX_HP),
-		score = 5
+		score = 0
 	}
 	monsters = {
 		Mob:new()
 	}
 	grass = makeGrass()
+	powerups = {}
 	bolts = {}
+	decals = {}
+	coins = {}
+	powerupTimer = 0
 	boltTimer = 0
+	bossTimer = 0
 end
 
 function Gameplay:update(dt)
@@ -131,8 +138,22 @@ function Gameplay:update(dt)
 end
 
 function Gameplay:draw()
+	local mouseOver = false
+	local x, y = love.mouse.getPosition()
+	for _, powerup in ipairs(powerups) do
+		if powerup:checkHit(x, y) then mouseOver = true end
+	end
 	for _, bolt in ipairs(bolts) do
 		if bolt:checkHit(x, y) then mouseOver = true end
+	end
+	for _, monster in ipairs(monsters) do
+		if monster:checkHit(x, y) then mouseOver = true end
+	end
+
+	if mouseOver == false then
+		drawable.drawTarget({
+			x = x, y = y, size = 40
+		}, "faint-grey")
 	end
 	-- draw health
 	player.health:drawPlayerHealth()
@@ -142,6 +163,7 @@ function Gameplay:draw()
 	love.graphics.print(string.rep(" ", SCORE_LENGTH - #tostring(player.score)) .. player.score, 710,
 		30)
 
+	-- draw sprites
 	for _, decal in ipairs(decals) do
 		decal:draw()
 	end

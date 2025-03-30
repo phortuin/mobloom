@@ -49,13 +49,11 @@ love.graphics.setNewFont("assets/fonts/Chivo-Bold.ttf", 30)
 love.graphics.setDefaultFilter("nearest", "nearest", 0)
 loadAssets()
 
-SCORE_LENGTH = 4
-ATTACK_AFTER = 200
-MAX_HP = 5
-AGE_AFTER = 500
+SCORE_LENGTH = 3
 MAX_HP = 10
 
-ATTACK_AFTER_SECONDS = 5
+ATTACK_AFTER = 4
+BOSS_ATTACK_AFTER = 2
 POWERUP_SPAWN_INTERVAL = 10
 BOLT_SPAWN_INTERVAL = 20
 BOSS_SPAWN_INTERVAL = 10
