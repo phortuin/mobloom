@@ -32,8 +32,8 @@ end
 
 function Mob:move()
 	local dx, dy, ds, dr = math.random(-2, 2), math.random(-2, 2), math.random(-1, 1), math.random(-2, 2)
-	self.x = Wrap(self.x + dx, Bounds.x_lower, Bounds.x_upper)
-	self.y = Wrap(self.y + dy, Bounds.y_lower, Bounds.y_upper)
+	self.x = Clamp(self.x + dx, Bounds.x_lower, Bounds.x_upper)
+	self.y = Clamp(self.y + dy, Bounds.y_lower, Bounds.y_upper)
 	self.size = Clamp(self.size + ds, self.smallestSize, self.largestSize)
 	self.rotation = self.rotation + dr
 end

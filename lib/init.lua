@@ -74,10 +74,10 @@ Clamp = function(value, lower, upper)
 end
 
 Bounds = {
-	x_upper = 780,
-	x_lower = 20,
-	y_upper = 580,
-	y_lower = 20,
+	x_upper = 760,
+	x_lower = 50,
+	y_upper = 560,
+	y_lower = 90,
 	size_lower = 24,
 	size_upper = 48,
 }

@@ -95,11 +95,9 @@ function Gameplay:draw()
 	player.health:drawPlayerHealth()
 
 	-- draw score
-	love.graphics.setColor(1, 0.8, 0.2, 1)
-	love.graphics.print("$", 650, 50)
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.print(string.rep("0", SCORE_LENGTH - #tostring(player.score)) .. player.score, 680,
-		50)
+	love.graphics.print(string.rep(" ", SCORE_LENGTH - #tostring(player.score)) .. player.score, 710,
+		30)
 
 	for _, decal in ipairs(decals) do
 		decal:draw()
