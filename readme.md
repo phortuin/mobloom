@@ -13,7 +13,7 @@
 
 Install Love on your machine, preferably with [Homebrew](https://formulae.brew.sh/cask/love):
 
-```bash
+```shell
 $ brew install --cask love
 ```
 
@@ -21,7 +21,7 @@ $ brew install --cask love
 
 Clone this repository, then
 
-```bash
+```shell
 $ cd mobloom
 $ love .
 ```
